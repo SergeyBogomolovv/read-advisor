@@ -1,7 +1,8 @@
 go 1.23.5
 
 use (
-	./lib/common
+	./lib
+	./services/books
 	./services/bot
 	./services/feed
 )
