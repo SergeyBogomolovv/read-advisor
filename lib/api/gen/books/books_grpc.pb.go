@@ -19,16 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Books_GetVolumes_FullMethodName = "/books.Books/GetVolumes"
-	Books_GetVolume_FullMethodName  = "/books.Books/GetVolume"
+	Books_Search_FullMethodName   = "/books.Books/Search"
+	Books_BookByID_FullMethodName = "/books.Books/BookByID"
 )
 
 // BooksClient is the client API for Books service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BooksClient interface {
-	GetVolumes(ctx context.Context, in *Params, opts ...grpc.CallOption) (*Volumes, error)
-	GetVolume(ctx context.Context, in *Params, opts ...grpc.CallOption) (*Volume, error)
+	Search(ctx context.Context, in *SearchParams, opts ...grpc.CallOption) (*BookList, error)
+	BookByID(ctx context.Context, in *BookID, opts ...grpc.CallOption) (*Book, error)
 }
 
 type booksClient struct {
@@ -39,20 +39,20 @@ func NewBooksClient(cc grpc.ClientConnInterface) BooksClient {
 	return &booksClient{cc}
 }
 
-func (c *booksClient) GetVolumes(ctx context.Context, in *Params, opts ...grpc.CallOption) (*Volumes, error) {
+func (c *booksClient) Search(ctx context.Context, in *SearchParams, opts ...grpc.CallOption) (*BookList, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Volumes)
-	err := c.cc.Invoke(ctx, Books_GetVolumes_FullMethodName, in, out, cOpts...)
+	out := new(BookList)
+	err := c.cc.Invoke(ctx, Books_Search_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *booksClient) GetVolume(ctx context.Context, in *Params, opts ...grpc.CallOption) (*Volume, error) {
+func (c *booksClient) BookByID(ctx context.Context, in *BookID, opts ...grpc.CallOption) (*Book, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Volume)
-	err := c.cc.Invoke(ctx, Books_GetVolume_FullMethodName, in, out, cOpts...)
+	out := new(Book)
+	err := c.cc.Invoke(ctx, Books_BookByID_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +63,8 @@ func (c *booksClient) GetVolume(ctx context.Context, in *Params, opts ...grpc.Ca
 // All implementations must embed UnimplementedBooksServer
 // for forward compatibility.
 type BooksServer interface {
-	GetVolumes(context.Context, *Params) (*Volumes, error)
-	GetVolume(context.Context, *Params) (*Volume, error)
+	Search(context.Context, *SearchParams) (*BookList, error)
+	BookByID(context.Context, *BookID) (*Book, error)
 	mustEmbedUnimplementedBooksServer()
 }
 
@@ -75,11 +75,11 @@ type BooksServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBooksServer struct{}
 
-func (UnimplementedBooksServer) GetVolumes(context.Context, *Params) (*Volumes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetVolumes not implemented")
+func (UnimplementedBooksServer) Search(context.Context, *SearchParams) (*BookList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
-func (UnimplementedBooksServer) GetVolume(context.Context, *Params) (*Volume, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetVolume not implemented")
+func (UnimplementedBooksServer) BookByID(context.Context, *BookID) (*Book, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BookByID not implemented")
 }
 func (UnimplementedBooksServer) mustEmbedUnimplementedBooksServer() {}
 func (UnimplementedBooksServer) testEmbeddedByValue()               {}
@@ -102,38 +102,38 @@ func RegisterBooksServer(s grpc.ServiceRegistrar, srv BooksServer) {
 	s.RegisterService(&Books_ServiceDesc, srv)
 }
 
-func _Books_GetVolumes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Params)
+func _Books_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchParams)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BooksServer).GetVolumes(ctx, in)
+		return srv.(BooksServer).Search(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Books_GetVolumes_FullMethodName,
+		FullMethod: Books_Search_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BooksServer).GetVolumes(ctx, req.(*Params))
+		return srv.(BooksServer).Search(ctx, req.(*SearchParams))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Books_GetVolume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Params)
+func _Books_BookByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookID)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BooksServer).GetVolume(ctx, in)
+		return srv.(BooksServer).BookByID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Books_GetVolume_FullMethodName,
+		FullMethod: Books_BookByID_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BooksServer).GetVolume(ctx, req.(*Params))
+		return srv.(BooksServer).BookByID(ctx, req.(*BookID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -146,12 +146,12 @@ var Books_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BooksServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetVolumes",
-			Handler:    _Books_GetVolumes_Handler,
+			MethodName: "Search",
+			Handler:    _Books_Search_Handler,
 		},
 		{
-			MethodName: "GetVolume",
-			Handler:    _Books_GetVolume_Handler,
+			MethodName: "BookByID",
+			Handler:    _Books_BookByID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
