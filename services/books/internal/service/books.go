@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/SergeyBogomolovv/read-advisor/lib/common/utils"
 	"github.com/SergeyBogomolovv/read-advisor/services/books/internal/lib/transport"
 	"github.com/SergeyBogomolovv/read-advisor/services/books/pkg/e"
-	"github.com/SergeyBogomolovv/read-advisor/services/books/pkg/utils"
 )
 
 const basePath = "https://www.googleapis.com/books/v1/volumes"
@@ -85,10 +85,13 @@ func (s *service) doRequest(logger *slog.Logger, req *http.Request) (*http.Respo
 		return nil, e.Wrap("failed to do request", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		logger.Error("failed to request books", "status", resp.StatusCode)
-		return nil, fmt.Errorf("failed to request books: %d", resp.StatusCode)
+	switch resp.StatusCode {
+	case http.StatusOK:
+		return resp, nil
+	case http.StatusNotFound:
+		return nil, ErrNotFound
+	default:
+		logger.Error("failed to request api", "status", resp.StatusCode)
+		return nil, fmt.Errorf("failed to request api: %d", resp.StatusCode)
 	}
-
-	return resp, nil
 }

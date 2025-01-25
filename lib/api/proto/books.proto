@@ -40,7 +40,7 @@ message Book {
   float averageRating = 8;
   int64 ratingsCount = 9;
 
-  int32 pageCount = 10;
+  int64 pageCount = 10;
   ImageLinks imageLinks = 11;
 }
 

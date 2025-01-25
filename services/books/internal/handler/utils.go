@@ -16,24 +16,28 @@ func convertVolumes(volumes *svc.Volumes) *pb.BookList {
 }
 
 func convertVolume(v *svc.Volume) *pb.Book {
-	return &pb.Book{
-		Id:            v.Id,
-		Title:         v.VolumeInfo.Title,
-		Description:   v.VolumeInfo.Description,
-		Categories:    v.VolumeInfo.Categories,
-		Authors:       v.VolumeInfo.Authors,
-		AverageRating: float32(v.VolumeInfo.AverageRating),
-		RatingsCount:  v.VolumeInfo.RatingsCount,
-		PublishedDate: v.VolumeInfo.PublishedDate,
-		Publisher:     v.VolumeInfo.Publisher,
-		PageCount:     int32(v.VolumeInfo.PageCount),
-		ImageLinks: &pb.ImageLinks{
-			ExtraLarge:     v.VolumeInfo.ImageLinks.ExtraLarge,
-			Large:          v.VolumeInfo.ImageLinks.Large,
-			Medium:         v.VolumeInfo.ImageLinks.Medium,
-			Small:          v.VolumeInfo.ImageLinks.Small,
-			SmallThumbnail: v.VolumeInfo.ImageLinks.SmallThumbnail,
-			Thumbnail:      v.VolumeInfo.ImageLinks.Thumbnail,
-		},
+	book := new(pb.Book)
+	book.Id = v.Id
+	if v.VolumeInfo != nil {
+		book.Title = v.VolumeInfo.Title
+		book.Description = v.VolumeInfo.Description
+		book.Categories = v.VolumeInfo.Categories
+		book.Authors = v.VolumeInfo.Authors
+		book.AverageRating = float32(v.VolumeInfo.AverageRating)
+		book.RatingsCount = v.VolumeInfo.RatingsCount
+		book.PublishedDate = v.VolumeInfo.PublishedDate
+		book.Publisher = v.VolumeInfo.Publisher
+		book.PageCount = v.VolumeInfo.PageCount
+		if v.VolumeInfo.ImageLinks != nil {
+			book.ImageLinks = &pb.ImageLinks{
+				ExtraLarge:     v.VolumeInfo.ImageLinks.ExtraLarge,
+				Large:          v.VolumeInfo.ImageLinks.Large,
+				Medium:         v.VolumeInfo.ImageLinks.Medium,
+				Small:          v.VolumeInfo.ImageLinks.Small,
+				SmallThumbnail: v.VolumeInfo.ImageLinks.SmallThumbnail,
+				Thumbnail:      v.VolumeInfo.ImageLinks.Thumbnail,
+			}
+		}
 	}
+	return book
 }

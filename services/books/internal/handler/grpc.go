@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	svc "github.com/SergeyBogomolovv/read-advisor/services/books/internal/service"
@@ -11,6 +12,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+type BookService interface {
+	Search(ctx context.Context, query string, params svc.ApiParams) (*svc.Volumes, error)
+	ByID(ctx context.Context, id string) (*svc.Volume, error)
+}
 
 type handler struct {
 	logger  *slog.Logger
@@ -53,6 +59,9 @@ func (h *handler) BookByID(ctx context.Context, params *pb.BookID) (*pb.Book, er
 
 	volume, err := h.service.ByID(context.Background(), params.Id)
 	if err != nil {
+		if errors.Is(err, svc.ErrNotFound) {
+			return nil, status.Error(codes.NotFound, "book not found")
+		}
 		logger.Error("failed to get book", "err", err)
 		return nil, status.Error(codes.Internal, "something went wrong")
 	}

@@ -1,9 +1,12 @@
 package service
 
 import (
+	"errors"
 	"net/url"
 	"strconv"
 )
+
+var ErrNotFound = errors.New("not found")
 
 type ApiParams struct {
 	LangRestrict string
