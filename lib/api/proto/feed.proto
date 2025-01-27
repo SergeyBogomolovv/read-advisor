@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package feed;
+
+option go_package = "/feed";
+
+service Feed {
+  rpc ForUser(UserID) returns (Book) {}
+}
+
+message UserID {
+  int64 id = 1;
+}
+
+message Book {
+  string id = 1;
+
+  string title = 2;
+  string description = 3;
+  repeated string categories = 4;
+
+  repeated string authors = 5;
+  string publishedDate = 6;
+  string publisher = 7;
+
+  float averageRating = 8;
+  int64 ratingsCount = 9;
+
+  int64 pageCount = 10;
+  string imageLink = 11;
+}
